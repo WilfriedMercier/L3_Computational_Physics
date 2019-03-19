@@ -1,0 +1,100 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_vector.h>
+#include <gsl/gsl_linalg.h>
+#include <gsl/gsl_const_cgsm.h>
+
+#define M 40 //mass in kg
+#define G GSL_CONST_CGSM_GRAV_ACCEL //g in N/kg
+#define W1 (-M*G) //weight in N (orientated)
+#define B 80 //distance between the attachment points and the centre of the equilateral triangle
+#define A (sqrt(3)*B)
+#define C (3*B/2)
+#define PI 3.14159265359
+
+void initialize(gsl_vector *M1, gsl_vector *M2, gsl_vector *M3, double x, double y);
+void compute_angles(gsl_vector *M1, gsl_vector *M2, gsl_vector *M3, double t1, double t2, double t3, double p1, double p2, double p)
+void matrix_fill(gsl_matrix *m, double t1, double t2, double t3, double p1, double p2, double p3);
+
+void second_method()
+{
+    double theta1, theta2, theta3, phi1, phi2, phi3;
+    gsl_vector  *M1M, *M2M, *M3M, *sol, *W, *S, *work;
+    //W is weight vector, sol the solution, S and work are used for SVD method
+    gsl_matrix *m, *V; //m the matrix in the linear system, V used in SVD
+
+    M1M = gsl_vector_calloc(3); //position vectors
+    M2M = gsl_vector_calloc(3);
+    M3M = gsl_vector_calloc(3);
+
+    W = gsl_vector_calloc(3);
+    cte = gsl_vector_calloc(3);
+    sol = gsl_vector_calloc(3);
+    m = gsl_matrix_calloc(3,3);
+
+    V = gsl_matrix_calloc(3,3);
+    work = gsl_vector_calloc(3);
+    S = gsl_vector_calloc(3);
+
+    initialize(M1M, M2M,M3M,0,0);
+    compute_angles(M1M, M2M, M3M, theta1, theta2, theta3, phi1, phi2, phi3);
+
+    gsl_vector_set(W, 2, W1); //define the weight vector W along the z axis
+
+    gsl_vector_free(M1M);
+    gsl_vector_free(M2M);
+    gsl_vector_free(M3M);
+    gsl_vector_free(W);
+    gsl_vector_free(cte);
+    gsl_vector_free(sol);
+    gsl_vector_free(work);
+    gsl_vector_free(S);
+    gsl_matrix_free(V);
+    gsl_matrix_free(m);
+
+}
+
+void initialize(gsl_vector *M1M, gsl_vector *M2M, gsl_vector *M3M, double x, double y)
+{
+    gsl_vector_set(M1M, 0, -x);
+    gsl_vector_set(M1M, 1, C-y);
+    gsl_vector_set(M1M, 2, 10);
+
+    gsl_vector_set(M2M, 0, A-x);
+    gsl_vector_set(M2M, 1, C-y);
+    gsl_vector_set(M2M, 2, 10);
+
+    gsl_vector_set(M3M, 0, A/2-x);
+    gsl_vector_set(M3M, 1, -y);
+    gsl_vector_set(M3M, 2, 10);
+}
+
+void compute_angles(gsl_vector *M1, gsl_vector *M2, gsl_vector *M3, double t1, double t2, double t3, double p1, double p2, double p)
+{
+    r1 = sqrt(pow(gsl_vector_get(M1,0),2) + pow(gsl_vector_get(M1,1),2) + pow(gsl_vector_get(M1,2),2));
+    r2 = sqrt(pow(gsl_vector_get(M2,0),2) + pow(gsl_vector_get(M2,1),2) + pow(gsl_vector_get(M2,2),2));
+    r3 = sqrt(pow(gsl_vector_get(M3,0),2) + pow(gsl_vector_get(M3,1),2) + pow(gsl_vector_get(M3,2),2));
+
+    t1 = acos(-gsl_vector_get(M1,2)/r1);
+    t2 = acos(-gsl_vector_get(M2,2)/r2);
+    t3 = acos(-gsl_vector_get(M3,2)/r3);
+
+    p1 = atan2(-gsl_vector_get(M1,1), -gsl_vector_get(M1,0)) + 2*PI;
+    p2 = atan2(-gsl_vector_get(M2,1), -gsl_vector_get(M2,0)) + 2*PI;
+    p3 = atan2(-gsl_vector_get(M3,1), -gsl_vector_get(M3,0)) + 2*PI;
+}
+
+void matrix_fill(gsl_matrix *m, double t1, double t2, double t3, double p1, double p2, double p3)
+{
+    gsl_matrix_set(m, 0, 0, cos(t1) * cos(p1));
+    gsl_matrix_set(m, 0, 1, cos(t2) * cos(p2));
+    gsl_matrix_set(m, 0, 2, cos(t3) * cos(p3));
+    gsl_matrix_set(m, 1, 0, cos(t1) * sin(p1));
+    gsl_matrix_set(m, 1, 1, cos(t2) * sin(p2));
+    gsl_matrix_set(m, 1, 2, cos(t3) * sin(p3));
+    gsl_matrix_set(m, 2, 0, sin(t1));
+    gsl_matrix_set(m, 2, 1, sin(t2));
+    gsl_matrix_set(m, 2, 2, sin(t3));
+}

@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1490465566 source:c:\users\utilisateur\documents\bristol courses\computational physics\exercise3\physics problem 2\main.c
+	<stdio.h>
+	<stdlib.h>
+	<gsl/gsl_rng.h>
+	<gsl/gsl_randist.h>
+

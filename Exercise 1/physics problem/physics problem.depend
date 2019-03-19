@@ -1,0 +1,24 @@
+# depslib dependency file v1.0
+1486904678 source:c:\users\utilisateur\documents\bristol courses\computational physics\exercise 1\physics problem\main.c
+	"main.h"
+
+1486756826 source:c:\users\utilisateur\documents\bristol courses\computational physics\exercise 1\physics problem\first_method.c
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<gsl/gsl_matrix.h>
+	<gsl/gsl_vector.h>
+	<gsl/gsl_linalg.h>
+	<gsl/gsl_const_cgsm.h>
+
+1486477476 c:\users\utilisateur\documents\bristol courses\computational physics\exercise 1\physics problem\main.h
+
+1486908434 source:c:\users\utilisateur\documents\bristol courses\computational physics\exercise 1\physics problem\second_method.c
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<gsl/gsl_matrix.h>
+	<gsl/gsl_vector.h>
+	<gsl/gsl_linalg.h>
+	<gsl/gsl_const_cgsm.h>
+
